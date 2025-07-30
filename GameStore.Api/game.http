@@ -1,7 +1,7 @@
 GET http://localhost:5197/games
 
 ###
-GET http://localhost:5197/games/1
+GET http://localhost:5197/games/4
 
 ###
 POST http://localhost:5197/games
@@ -13,3 +13,17 @@ Content-Type: application/json
     "price": 19.99,
     "releaseDate": "2011-11-18"
 }   
+
+###
+PUT http://localhost:5197/games/5
+Content-Type: application/json
+
+ {
+    "name": "new The Legend of Zelda: Breath of the Wild",
+    "genre": "new Action-Adventure",
+    "price": 9.99,
+    "releaseDate": "2017-03-03"
+}
+
+###
+DELETE http://localhost:5197/games/1
