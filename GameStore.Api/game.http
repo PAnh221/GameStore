@@ -8,14 +8,14 @@ POST http://localhost:5197/games
 Content-Type: application/json
 
 {
-    "name": "Minecraft",
+    "name": "",
     "genre": "Kids and Family",
     "price": 19.99,
     "releaseDate": "2011-11-18"
 }   
 
 ###
-PUT http://localhost:5197/games/5
+PUT http://localhost:5197/games/1
 Content-Type: application/json
 
  {
