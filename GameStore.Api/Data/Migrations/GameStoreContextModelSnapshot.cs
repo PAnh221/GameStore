@@ -56,6 +56,33 @@ namespace GameStore.Api.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Genres");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Name = "Fighting"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "Roleplaying"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Name = "Sports"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Name = "Racing"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Name = "Kids and Family"
+                        });
                 });
 
             modelBuilder.Entity("GameStore.Api.Entities.Game", b =>

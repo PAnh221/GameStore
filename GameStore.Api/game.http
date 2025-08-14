@@ -1,29 +1,29 @@
 GET http://localhost:5197/games
 
 ###
-GET http://localhost:5197/games/4
+GET http://localhost:5197/games/14
 
 ###
 POST http://localhost:5197/games
 Content-Type: application/json
 
 {
-    "name": "",
-    "genre": "Kids and Family",
+    "name": "PA",
+    "genreId": 5,
     "price": 19.99,
     "releaseDate": "2011-11-18"
 }   
 
 ###
-PUT http://localhost:5197/games/1
+PUT http://localhost:5197/games/14
 Content-Type: application/json
 
- {
+{
     "name": "new The Legend of Zelda: Breath of the Wild",
-    "genre": "new Action-Adventure",
+    "genreId": "1",
     "price": 9.99,
     "releaseDate": "2017-03-03"
 }
 
 ###
-DELETE http://localhost:5197/games/1
+DELETE http://localhost:5197/games/14
