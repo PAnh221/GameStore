@@ -1,14 +1,14 @@
 GET http://localhost:5197/games
 
 ###
-GET http://localhost:5197/games/14
+GET http://localhost:5197/games/2
 
 ###
 POST http://localhost:5197/games
 Content-Type: application/json
 
 {
-    "name": "PA",
+    "name": "PA2",
     "genreId": 5,
     "price": 19.99,
     "releaseDate": "2011-11-18"
