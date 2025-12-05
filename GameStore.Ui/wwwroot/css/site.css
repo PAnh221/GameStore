@@ -1,0 +1,4 @@
+body { padding-bottom: 60px; }
+table th, table td { vertical-align: middle; }
+.card-genre { margin-bottom: 0.75rem; }
+.release-date { white-space: nowrap; }
