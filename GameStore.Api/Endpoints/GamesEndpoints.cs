@@ -56,18 +56,18 @@ public static class GamesEndpoints
         // PUT /games/1
         group.MapPut("/{id}", async (int id, UpdateGameDto updatedGame, GameStoreContext dbContext) =>
         {
-            var genreExists = await dbContext.Genres.AnyAsync(genre => genre.Id == updatedGame.GenreId);
-
-            if (!genreExists)
-            {
-                return Results.BadRequest("Invalid genre ID.");
-            }
-
             var existingGame = await dbContext.Games.FindAsync(id);
 
             if (existingGame is null)
             {
                 return Results.NotFound();
+            }
+
+            var genreExists = await dbContext.Genres.AnyAsync(genre => genre.Id == updatedGame.GenreId);
+
+            if (!genreExists)
+            {
+                return Results.BadRequest("Invalid genre ID.");
             }
 
             dbContext.Entry(existingGame)
@@ -82,9 +82,14 @@ public static class GamesEndpoints
         // DELETE /games/1
         group.MapDelete("/{id}", async (int id, GameStoreContext dbContext) =>
         {
-            await dbContext.Games
+            var deleteCount = await dbContext.Games
                     .Where(game => game.Id == id)
                     .ExecuteDeleteAsync();
+
+            if (deleteCount == 0)
+            {
+                return Results.NotFound();
+            }
 
             return Results.NoContent();
         });
