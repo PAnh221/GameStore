@@ -36,6 +36,13 @@ public static class GamesEndpoints
         // POST /games
         group.MapPost("", async (CreateGameDto newGame, GameStoreContext dbContext) =>
         {
+            var genreExists = await dbContext.Genres.AnyAsync(genre => genre.Id == newGame.GenreId);
+
+            if (!genreExists)
+            {
+                return Results.BadRequest("Invalid genre ID.");
+            }
+
             Game game = newGame.ToEntity();
 
             dbContext.Games.Add(game);
@@ -49,6 +56,13 @@ public static class GamesEndpoints
         // PUT /games/1
         group.MapPut("/{id}", async (int id, UpdateGameDto updatedGame, GameStoreContext dbContext) =>
         {
+            var genreExists = await dbContext.Genres.AnyAsync(genre => genre.Id == updatedGame.GenreId);
+
+            if (!genreExists)
+            {
+                return Results.BadRequest("Invalid genre ID.");
+            }
+
             var existingGame = await dbContext.Games.FindAsync(id);
 
             if (existingGame is null)

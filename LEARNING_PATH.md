@@ -9,7 +9,7 @@ Started: 2026-10-19
 
 ## Stage 1: Housekeeping
 
-- [ ] **1.1 Clean up git**
+- [x] **1.1 Clean up git**
   - Add `*.db`, `*.db-shm`, `*.db-wal` to `.gitignore`.
   - Untrack the database file:
     ```bash
@@ -18,7 +18,7 @@ Started: 2026-10-19
   - Commit the `SeedGenres` migration.
   - **Done when:** `git ls-files` shows no `.db` file, and both migrations are committed.
 
-- [ ] **1.2 Add the UI to the solution**
+- [x] **1.2 Add the UI to the solution**
   ```bash
   dotnet sln add GameStore.Ui
   ```
@@ -123,3 +123,6 @@ Add a line whenever you finish something or get stuck.
 | Date | Step | Notes |
 |---|---|---|
 | 2026-10-19 | — | Path created. Baseline: basic create/read/update/delete for games, GET for genres, SQLite, EF migrations, read-only Razor UI. |
+| 2026-10-19 | 1.1 | Done (commit 57bde8b). `.db` ignored and untracked; both migrations committed. |
+| 2026-10-19 | 1.2 | Done. `GameStore.sln` includes the UI; `dotnet build` succeeds for both projects. Solution change not committed yet. |
+| 2026-10-19 | 2.1 | In progress. POST checks the genre with `AnyAsync` (returns a plain-string 400); PUT not done yet. Test request added to `game.http`. |

@@ -15,12 +15,34 @@ Content-Type: application/json
 }   
 
 ###
+POST http://localhost:5197/games
+Content-Type: application/json
+
+{
+    "name": "Bad Genre Game",
+    "genreId": 999,
+    "price": 19.99,
+    "releaseDate": "2020-01-01"
+}
+
+###
 PUT http://localhost:5197/games/14
 Content-Type: application/json
 
 {
     "name": "new The Legend of Zelda: Breath of the Wild",
     "genreId": "1",
+    "price": 9.99,
+    "releaseDate": "2017-03-03"
+}
+
+###
+PUT http://localhost:5197/games/14
+Content-Type: application/json
+
+{
+    "name": "bad genre game",
+    "genreId": "999",
     "price": 9.99,
     "releaseDate": "2017-03-03"
 }
