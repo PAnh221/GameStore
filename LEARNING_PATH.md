@@ -26,11 +26,11 @@ Started: 2026-10-19
 
 ## Stage 2: Correct HTTP behaviour
 
-- [ ] **2.1 Validate GenreId**
+- [x] **2.1 Validate GenreId**
   - POST and PUT `/games` return `400` when the genre doesn't exist.
   - **Done when:** sending `genreId: 999` returns 400, not a 500 error.
 
-- [ ] **2.2 DELETE returns 404 when nothing was deleted**
+- [x] **2.2 DELETE returns 404 when nothing was deleted**
   - Use the row count returned by `ExecuteDeleteAsync`.
   - **Done when:** deleting a missing id returns 404.
 
@@ -126,3 +126,9 @@ Add a line whenever you finish something or get stuck.
 | 2026-10-19 | 1.1 | Done (commit 57bde8b). `.db` ignored and untracked; both migrations committed. |
 | 2026-10-19 | 1.2 | Done. `GameStore.sln` includes the UI; `dotnet build` succeeds for both projects. Solution change not committed yet. |
 | 2026-10-19 | 2.1 | In progress. POST checks the genre with `AnyAsync` (returns a plain-string 400); PUT not done yet. Test request added to `game.http`. |
+| 2026-10-19 | 2.1 | Done (commit d70f0ee). Tested: POST and PUT with genreId 999 both return 400. Optional polish: switch to `ValidationProblem`, and check the game exists before the genre in PUT. |
+| 2026-10-19 | 2.1 | PUT check order fixed: a missing game now returns 404 even when the genre is also bad. Tested. Still a plain-string 400. Not committed yet. |
+| 2026-10-19 | 2.2 | Done. DELETE uses the row count: an existing game returns 204, a missing one 404. Tested. Committed in 4014ed9. |
+| 2026-10-19 | 2.3 | In progress. POST and PUT done, with duplicate-name checks (PUT correctly excludes itself). Missing: GET /genres/{id}, DELETE, and `.WithParameterValidation()` on the genres group (an empty name isn't rejected). Not committed yet. |
+| 2026-10-19 | 2.3 | Nearly done. Validation, GET by id and DELETE added; all routes tested. Remaining: deleting a genre cascade-deletes its games (confirmed on a throwaway DB), POST still uses a hard-coded URL instead of CreatedAtRoute, `genre.http` lacks GET-by-id/DELETE requests. Not committed yet. |
+| 2026-10-19 | 2.3 | CreatedAtRoute done ✅. A `hasGames` check was added, but it runs *after* `ExecuteDeleteAsync`, so the delete and cascade already happened. Tested: deleting a genre with games still returns 204 and wipes its games. Not committed yet. |

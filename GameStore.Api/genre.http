@@ -1,1 +1,20 @@
 GET http://localhost:5197/genres
+
+###
+POST http://localhost:5197/genres
+Content-Type: application/json
+
+{
+    "name": "PA21"
+}   
+
+###
+PUT http://localhost:5197/genres/6
+Content-Type: application/json
+
+{
+    "name": "PA21 new name"
+}   
+
+###
+DELETE http://localhost:5197/genres/4

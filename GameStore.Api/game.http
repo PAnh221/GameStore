@@ -9,7 +9,7 @@ Content-Type: application/json
 
 {
     "name": "PA2",
-    "genreId": 5,
+    "genreId": 4,
     "price": 19.99,
     "releaseDate": "2011-11-18"
 }   
@@ -37,7 +37,7 @@ Content-Type: application/json
 }
 
 ###
-PUT http://localhost:5197/games/14
+PUT http://localhost:5197/games/1
 Content-Type: application/json
 
 {
