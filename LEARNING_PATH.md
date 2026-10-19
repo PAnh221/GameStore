@@ -34,13 +34,13 @@ Started: 2026-10-19
   - Use the row count returned by `ExecuteDeleteAsync`.
   - **Done when:** deleting a missing id returns 404.
 
-- [ ] **2.3 Full create/read/update/delete for genres**
+- [x] **2.3 Full create/read/update/delete for genres**
   - Add `GET /genres/{id}`, `POST`, `PUT` and `DELETE`, with DTOs and mapping.
   - **Done when:** `genre.http` has working requests for all five routes.
 
 ## Stage 3: Professional API
 
-- [ ] **3.1 Swagger / OpenAPI**
+- [x] **3.1 Swagger / OpenAPI**
   - **Done when:** `/swagger` shows all endpoints in Development.
 
 - [ ] **3.2 Pagination and filtering**
@@ -132,3 +132,6 @@ Add a line whenever you finish something or get stuck.
 | 2026-10-19 | 2.3 | In progress. POST and PUT done, with duplicate-name checks (PUT correctly excludes itself). Missing: GET /genres/{id}, DELETE, and `.WithParameterValidation()` on the genres group (an empty name isn't rejected). Not committed yet. |
 | 2026-10-19 | 2.3 | Nearly done. Validation, GET by id and DELETE added; all routes tested. Remaining: deleting a genre cascade-deletes its games (confirmed on a throwaway DB), POST still uses a hard-coded URL instead of CreatedAtRoute, `genre.http` lacks GET-by-id/DELETE requests. Not committed yet. |
 | 2026-10-19 | 2.3 | CreatedAtRoute done ✅. A `hasGames` check was added, but it runs *after* `ExecuteDeleteAsync`, so the delete and cascade already happened. Tested: deleting a genre with games still returns 204 and wipes its games. Not committed yet. |
+| 2026-10-19 | 2.3 | Done (commit fc03fe7). The games check now runs before the delete. Tested: a genre with games returns 409 and its games survive; no games returns 204; a missing genre returns 404. Also added `.editorconfig` and formatted the solution. **Stage 2 complete.** |
+| 2026-10-19 | 3.1 | In progress. Swashbuckle 6.5.0 added; `/swagger` lists all 10 endpoints. Bug: `app.Environment.IsDevelopment();` is a statement on its own that doesn't guard anything, so Swagger is also served in Production (verified). Not committed yet. |
+| 2026-10-19 | 3.1 | Done. Claude wrapped `UseSwagger`/`UseSwaggerUI` in `if (app.Environment.IsDevelopment())`. Tested: `/swagger` returns 200 in Development and 404 in Production. Not committed yet. |
