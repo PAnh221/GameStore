@@ -262,3 +262,8 @@ FakesAssemblies/
 
 # Visual Studio 6 workspace options file
 *.opt
+
+# SQLite database
+*.db
+*.db-shm
+*.db-wal
