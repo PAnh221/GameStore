@@ -267,3 +267,4 @@ FakesAssemblies/
 *.db
 *.db-shm
 *.db-wal
+asterix_story_log.json
