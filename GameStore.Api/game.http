@@ -1,7 +1,27 @@
 GET http://localhost:5197/games
 
 ###
-GET http://localhost:5197/games/2
+GET http://localhost:5197/games?genreId=4
+
+###
+GET http://localhost:5197/games?search=PA
+
+###
+GET http://localhost:5197/games?page=2&pageSize=1
+
+###
+GET http://localhost:5197/games?genreId=4&search=PA&page=1&pageSize=2
+
+###
+# Page past the end: empty items, correct totalCount
+GET http://localhost:5197/games?page=99
+
+###
+# Out of range: pageSize is clamped to 100
+GET http://localhost:5197/games?pageSize=100000
+
+###
+GET http://localhost:5197/games/1
 
 ###
 POST http://localhost:5197/games

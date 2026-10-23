@@ -43,7 +43,7 @@ Started: 2026-10-19
 - [x] **3.1 Swagger / OpenAPI**
   - **Done when:** `/swagger` shows all endpoints in Development.
 
-- [ ] **3.2 Pagination and filtering**
+- [x] **3.2 Pagination and filtering**
   - Support `GET /games?page=1&pageSize=10&genreId=2&search=zelda`.
   - **Done when:** the query parameters work, and the response includes the total count.
 
@@ -134,4 +134,5 @@ Add a line whenever you finish something or get stuck.
 | 2026-10-19 | 2.3 | CreatedAtRoute done ✅. A `hasGames` check was added, but it runs *after* `ExecuteDeleteAsync`, so the delete and cascade already happened. Tested: deleting a genre with games still returns 204 and wipes its games. Not committed yet. |
 | 2026-10-19 | 2.3 | Done (commit fc03fe7). The games check now runs before the delete. Tested: a genre with games returns 409 and its games survive; no games returns 204; a missing genre returns 404. Also added `.editorconfig` and formatted the solution. **Stage 2 complete.** |
 | 2026-10-19 | 3.1 | In progress. Swashbuckle 6.5.0 added; `/swagger` lists all 10 endpoints. Bug: `app.Environment.IsDevelopment();` is a statement on its own that doesn't guard anything, so Swagger is also served in Production (verified). Not committed yet. |
-| 2026-10-19 | 3.1 | Done. Claude wrapped `UseSwagger`/`UseSwaggerUI` in `if (app.Environment.IsDevelopment())`. Tested: `/swagger` returns 200 in Development and 404 in Production. Not committed yet. |
+| 2026-10-19 | 3.1 | Done. Claude wrapped `UseSwagger`/`UseSwaggerUI` in `if (app.Environment.IsDevelopment())`. Tested: `/swagger` returns 200 in Development and 404 in Production. Committed in 8932429. |
+| 2026-10-23 | 3.2 | Done. `GET /games` takes `genreId`, `search`, `page` and `pageSize` and returns a `PagedResult` with `totalCount` and `totalPages`. Out-of-range `page`/`pageSize` are clamped (pageSize 1–100). Sorted by Id before Skip/Take. UI updated to read `.Items` (it only shows page 1). Paging/filter requests added to `game.http`, and 7 sample games added. Tested. Note: search is case-sensitive in SQLite. |

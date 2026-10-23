@@ -16,12 +16,40 @@ public static class GamesEndpoints
                         .WithParameterValidation();
 
         // GET /games
-        group.MapGet("/", async (GameStoreContext dbContext) =>
-            await dbContext.Games
-                .Include(game => game.Genre)
+        group.MapGet("/", async (
+            GameStoreContext dbContext,
+            int? genreId,
+            string? search,
+            int page = 1,
+            int pageSize = 10) =>
+        {
+            page = Math.Max(page, 1);
+            pageSize = Math.Clamp(pageSize, 1, 100);
+            
+            var query = dbContext.Games.Include(game => game.Genre).AsNoTracking().AsQueryable();
+
+            if (genreId.HasValue)
+            {
+                query = query.Where(game => game.GenreId == genreId.Value);
+            }
+
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                query = query.Where(game => game.Name.Contains(search));
+            }
+
+            var totalGames = await query.CountAsync();
+            var totalPages = (int)Math.Ceiling(totalGames / (double)pageSize);
+
+            var games = await query
+                .OrderBy(game => game.Id)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
                 .Select(game => game.ToGameSummaryDto())
-                .AsNoTracking()
-                .ToListAsync());
+                .ToListAsync();
+            
+            return Results.Ok(new PagedResult<GameSummaryDto>(page, pageSize, totalPages, totalGames, games));
+        });
 
         // GET /games/1
         group.MapGet("/{id}", async (int id, GameStoreContext dbContext) =>

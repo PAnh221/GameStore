@@ -1,6 +1,9 @@
 GET http://localhost:5197/genres
 
 ###
+GET http://localhost:5197/genres/1
+
+###
 POST http://localhost:5197/genres
 Content-Type: application/json
 
