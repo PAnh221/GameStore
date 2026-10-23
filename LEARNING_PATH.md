@@ -47,7 +47,7 @@ Started: 2026-10-19
   - Support `GET /games?page=1&pageSize=10&genreId=2&search=zelda`.
   - **Done when:** the query parameters work, and the response includes the total count.
 
-- [ ] **3.3 Global error handling**
+- [x] **3.3 Global error handling**
   - Use `UseExceptionHandler` with `ProblemDetails`.
   - **Done when:** an unhandled exception returns `application/problem+json`.
 
@@ -136,3 +136,4 @@ Add a line whenever you finish something or get stuck.
 | 2026-10-19 | 3.1 | In progress. Swashbuckle 6.5.0 added; `/swagger` lists all 10 endpoints. Bug: `app.Environment.IsDevelopment();` is a statement on its own that doesn't guard anything, so Swagger is also served in Production (verified). Not committed yet. |
 | 2026-10-19 | 3.1 | Done. Claude wrapped `UseSwagger`/`UseSwaggerUI` in `if (app.Environment.IsDevelopment())`. Tested: `/swagger` returns 200 in Development and 404 in Production. Committed in 8932429. |
 | 2026-10-23 | 3.2 | Done. `GET /games` takes `genreId`, `search`, `page` and `pageSize` and returns a `PagedResult` with `totalCount` and `totalPages`. Out-of-range `page`/`pageSize` are clamped (pageSize 1–100). Sorted by Id before Skip/Take. UI updated to read `.Items` (it only shows page 1). Paging/filter requests added to `game.http`, and 7 sample games added. Tested. Note: search is case-sensitive in SQLite. |
+| 2026-10-23 | 3.3 | Done. `AddProblemDetails`, `UseExceptionHandler` and `UseStatusCodePages` added. Tested with a temporary `/boom` route (now removed): in both Development and Production an unhandled exception returns a 500 `application/problem+json` without the exception details, and is still logged on the server. Empty 404s also come back as ProblemDetails. The games invalid-genre errors now use `Results.Problem(..., statusCode: 400)`. Gotcha: without `statusCode`, `Results.Problem` defaults to 500. Genre endpoint errors are still plain strings. |

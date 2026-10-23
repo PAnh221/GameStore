@@ -68,7 +68,7 @@ public static class GamesEndpoints
 
             if (!genreExists)
             {
-                return Results.BadRequest("Invalid genre ID.");
+                return Results.Problem(detail: "Invalid genre ID.", statusCode: StatusCodes.Status400BadRequest);
             }
 
             Game game = newGame.ToEntity();
@@ -95,7 +95,7 @@ public static class GamesEndpoints
 
             if (!genreExists)
             {
-                return Results.BadRequest("Invalid genre ID.");
+                return Results.Problem(detail: "Invalid genre ID.", statusCode: StatusCodes.Status400BadRequest);
             }
 
             dbContext.Entry(existingGame)
