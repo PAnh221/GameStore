@@ -3,6 +3,7 @@ using GameStore.Api.Mapping;
 using GameStore.Api.Dtos;
 using GameStore.Api.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace GameStore.Api.Endpoints;
 
@@ -14,31 +15,34 @@ public static class GenresEndpoints
 	{
 		var group = app.MapGroup("genres").WithParameterValidation();
 
-		group.MapGet("/", async (GameStoreContext dbContext) =>
-			await dbContext.Genres
+		group.MapGet("/", async Task<Ok<List<GenreDto>>> (GameStoreContext dbContext) =>
+		{
+			var genres = await dbContext.Genres
 							.Select(genre => genre.ToDto())
 							.AsNoTracking()
-							.ToListAsync());
+							.ToListAsync();
+			return TypedResults.Ok(genres);
+		});
 
-		group.MapGet("/{id}", async (int id, GameStoreContext dbContext) =>
+		group.MapGet("/{id}", async Task<Results<Ok<GenreDto>, NotFound>> (int id, GameStoreContext dbContext) =>
 		{
 			var genre = await dbContext.Genres.FindAsync(id);
 
 			if (genre is null)
 			{
-				return Results.NotFound();
+				return TypedResults.NotFound();
 			}
 
-			return Results.Ok(genre.ToDto());
+			return TypedResults.Ok(genre.ToDto());
 		}).WithName(GetGenreEndpointName);
 
-		group.MapPost("", async (CreateGenreDto newGenre, GameStoreContext dbContext) =>
+		group.MapPost("", async Task<Results<CreatedAtRoute<GenreDto>, ProblemHttpResult>> (CreateGenreDto newGenre, GameStoreContext dbContext) =>
 		{
 			var genreExists = await dbContext.Genres.AnyAsync(genre => genre.Name == newGenre.Name);
 
 			if (genreExists)
 			{
-				return Results.BadRequest("Genre already exists.");
+				return TypedResults.Problem(detail: "Genre already exists.", statusCode: StatusCodes.Status400BadRequest);
 			}
 
 			Genre genre = newGenre.ToEntity();
@@ -46,25 +50,27 @@ public static class GenresEndpoints
 			dbContext.Genres.Add(genre);
 			await dbContext.SaveChangesAsync();
 
-			return Results.CreatedAtRoute(GetGenreEndpointName,
-				new { id = genre.Id },
-				genre.ToDto());
+			return TypedResults.CreatedAtRoute(
+				genre.ToDto(),
+				GetGenreEndpointName,
+				new { id = genre.Id }
+			);
 		});
 
-		group.MapPut("/{id}", async (int id, UpdateGenreDto updatedGenre, GameStoreContext dbContext) =>
+		group.MapPut("/{id}", async Task<Results<NoContent, ProblemHttpResult, NotFound>> (int id, UpdateGenreDto updatedGenre, GameStoreContext dbContext) =>
 		{
 			var existingGenre = await dbContext.Genres.FindAsync(id);
 
 			if (existingGenre is null)
 			{
-				return Results.NotFound();
+				return TypedResults.NotFound();
 			}
 
 			var genreExists = await dbContext.Genres.AnyAsync(genre => genre.Name == updatedGenre.Name && genre.Id != id);
 
 			if (genreExists)
 			{
-				return Results.BadRequest("Genre name already exists.");
+				return TypedResults.Problem(detail: "Genre name already exists.", statusCode: StatusCodes.Status400BadRequest);
 			}
 
 			dbContext.Entry(existingGenre)
@@ -73,15 +79,15 @@ public static class GenresEndpoints
 
 			await dbContext.SaveChangesAsync();
 
-			return Results.NoContent();
+			return TypedResults.NoContent();
 		});
 
-		group.MapDelete("/{id}", async (int id, GameStoreContext dbContext) =>
+		group.MapDelete("/{id}", async Task<Results<NoContent, ProblemHttpResult, NotFound>> (int id, GameStoreContext dbContext) =>
 		{
 			var hasGames = await dbContext.Games.AnyAsync(game => game.GenreId == id);
 			if (hasGames)
 			{
-				return Results.Conflict("Cannot delete genre because it has associated games.");
+				return TypedResults.Problem(detail: "Cannot delete genre because it has associated games.", statusCode: StatusCodes.Status409Conflict);
 			}
 
 			var deleteCount = await dbContext.Genres
@@ -90,11 +96,11 @@ public static class GenresEndpoints
 
 			if (deleteCount == 0)
 			{
-				return Results.NotFound();
+				return TypedResults.NotFound();
 			}
 
-			return Results.NoContent();
-		});
+			return TypedResults.NoContent();
+		}).ProducesProblem(StatusCodes.Status409Conflict);
 
 		return group;
 	}
