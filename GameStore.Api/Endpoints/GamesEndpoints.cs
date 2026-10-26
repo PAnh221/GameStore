@@ -8,120 +8,120 @@ namespace GameStore.Api.Endpoints;
 
 public static class GamesEndpoints
 {
-    const string GetGameEndpointName = "GetGame";
+	const string GetGameEndpointName = "GetGame";
 
-    public static RouteGroupBuilder MapGamesEndpoints(this WebApplication app)
-    {
-        var group = app.MapGroup("games")
-                        .WithParameterValidation();
+	public static RouteGroupBuilder MapGamesEndpoints(this WebApplication app)
+	{
+		var group = app.MapGroup("games")
+						.WithParameterValidation();
 
-        // GET /games
-        group.MapGet("/", async (
-            GameStoreContext dbContext,
-            int? genreId,
-            string? search,
-            int page = 1,
-            int pageSize = 10) =>
-        {
-            page = Math.Max(page, 1);
-            pageSize = Math.Clamp(pageSize, 1, 100);
-            
-            var query = dbContext.Games.Include(game => game.Genre).AsNoTracking().AsQueryable();
+		// GET /games
+		group.MapGet("/", async (
+			GameStoreContext dbContext,
+			int? genreId,
+			string? search,
+			int page = 1,
+			int pageSize = 10) =>
+		{
+			page = Math.Max(page, 1);
+			pageSize = Math.Clamp(pageSize, 1, 100);
 
-            if (genreId.HasValue)
-            {
-                query = query.Where(game => game.GenreId == genreId.Value);
-            }
+			var query = dbContext.Games.Include(game => game.Genre).AsNoTracking().AsQueryable();
 
-            if (!string.IsNullOrWhiteSpace(search))
-            {
-                query = query.Where(game => game.Name.Contains(search));
-            }
+			if (genreId.HasValue)
+			{
+				query = query.Where(game => game.GenreId == genreId.Value);
+			}
 
-            var totalGames = await query.CountAsync();
-            var totalPages = (int)Math.Ceiling(totalGames / (double)pageSize);
+			if (!string.IsNullOrWhiteSpace(search))
+			{
+				query = query.Where(game => game.Name.Contains(search));
+			}
 
-            var games = await query
-                .OrderBy(game => game.Id)
-                .Skip((page - 1) * pageSize)
-                .Take(pageSize)
-                .Select(game => game.ToGameSummaryDto())
-                .ToListAsync();
-            
-            return Results.Ok(new PagedResult<GameSummaryDto>(page, pageSize, totalPages, totalGames, games));
-        });
+			var totalGames = await query.CountAsync();
+			var totalPages = (int)Math.Ceiling(totalGames / (double)pageSize);
 
-        // GET /games/1
-        group.MapGet("/{id}", async (int id, GameStoreContext dbContext) =>
-        {
-            Game? game = await dbContext.Games.FindAsync(id);
+			var games = await query
+				.OrderBy(game => game.Id)
+				.Skip((page - 1) * pageSize)
+				.Take(pageSize)
+				.Select(game => game.ToGameSummaryDto())
+				.ToListAsync();
 
-            return game is null ?
-                Results.NotFound() : Results.Ok(game.ToGameDetailsDto());
-        })
-        .WithName(GetGameEndpointName);
+			return Results.Ok(new PagedResult<GameSummaryDto>(page, pageSize, totalPages, totalGames, games));
+		});
 
-        // POST /games
-        group.MapPost("", async (CreateGameDto newGame, GameStoreContext dbContext) =>
-        {
-            var genreExists = await dbContext.Genres.AnyAsync(genre => genre.Id == newGame.GenreId);
+		// GET /games/1
+		group.MapGet("/{id}", async (int id, GameStoreContext dbContext) =>
+		{
+			Game? game = await dbContext.Games.FindAsync(id);
 
-            if (!genreExists)
-            {
-                return Results.Problem(detail: "Invalid genre ID.", statusCode: StatusCodes.Status400BadRequest);
-            }
+			return game is null ?
+				Results.NotFound() : Results.Ok(game.ToGameDetailsDto());
+		})
+		.WithName(GetGameEndpointName);
 
-            Game game = newGame.ToEntity();
+		// POST /games
+		group.MapPost("", async (CreateGameDto newGame, GameStoreContext dbContext) =>
+		{
+			var genreExists = await dbContext.Genres.AnyAsync(genre => genre.Id == newGame.GenreId);
 
-            dbContext.Games.Add(game);
-            await dbContext.SaveChangesAsync();
+			if (!genreExists)
+			{
+				return Results.Problem(detail: "Invalid genre ID.", statusCode: StatusCodes.Status400BadRequest);
+			}
 
-            return Results.CreatedAtRoute(GetGameEndpointName,
-                new { id = game.Id },
-                game.ToGameDetailsDto());
-        });
+			Game game = newGame.ToEntity();
 
-        // PUT /games/1
-        group.MapPut("/{id}", async (int id, UpdateGameDto updatedGame, GameStoreContext dbContext) =>
-        {
-            var existingGame = await dbContext.Games.FindAsync(id);
+			dbContext.Games.Add(game);
+			await dbContext.SaveChangesAsync();
 
-            if (existingGame is null)
-            {
-                return Results.NotFound();
-            }
+			return Results.CreatedAtRoute(GetGameEndpointName,
+				new { id = game.Id },
+				game.ToGameDetailsDto());
+		});
 
-            var genreExists = await dbContext.Genres.AnyAsync(genre => genre.Id == updatedGame.GenreId);
+		// PUT /games/1
+		group.MapPut("/{id}", async (int id, UpdateGameDto updatedGame, GameStoreContext dbContext) =>
+		{
+			var existingGame = await dbContext.Games.FindAsync(id);
 
-            if (!genreExists)
-            {
-                return Results.Problem(detail: "Invalid genre ID.", statusCode: StatusCodes.Status400BadRequest);
-            }
+			if (existingGame is null)
+			{
+				return Results.NotFound();
+			}
 
-            dbContext.Entry(existingGame)
-                .CurrentValues
-                .SetValues(updatedGame.ToEntity(id));
+			var genreExists = await dbContext.Genres.AnyAsync(genre => genre.Id == updatedGame.GenreId);
 
-            await dbContext.SaveChangesAsync();
+			if (!genreExists)
+			{
+				return Results.Problem(detail: "Invalid genre ID.", statusCode: StatusCodes.Status400BadRequest);
+			}
 
-            return Results.NoContent();
-        });
+			dbContext.Entry(existingGame)
+				.CurrentValues
+				.SetValues(updatedGame.ToEntity(id));
 
-        // DELETE /games/1
-        group.MapDelete("/{id}", async (int id, GameStoreContext dbContext) =>
-        {
-            var deleteCount = await dbContext.Games
-                    .Where(game => game.Id == id)
-                    .ExecuteDeleteAsync();
+			await dbContext.SaveChangesAsync();
 
-            if (deleteCount == 0)
-            {
-                return Results.NotFound();
-            }
+			return Results.NoContent();
+		});
 
-            return Results.NoContent();
-        });
+		// DELETE /games/1
+		group.MapDelete("/{id}", async (int id, GameStoreContext dbContext) =>
+		{
+			var deleteCount = await dbContext.Games
+					.Where(game => game.Id == id)
+					.ExecuteDeleteAsync();
 
-        return group;
-    }
+			if (deleteCount == 0)
+			{
+				return Results.NotFound();
+			}
+
+			return Results.NoContent();
+		});
+
+		return group;
+	}
 }

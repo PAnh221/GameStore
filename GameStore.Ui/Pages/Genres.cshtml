@@ -2,31 +2,31 @@
 @model GenresModel
 
 <div class="d-flex justify-content-between align-items-center mb-3">
-    <h1>Genres</h1>
-    <a class="btn btn-secondary" asp-page="/Index">Home</a>
+	<h1>Genres</h1>
+	<a class="btn btn-secondary" asp-page="/Index">Home</a>
 </div>
 
 @if (Model.Genres is null)
 {
-    <div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div>
+	<div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div>
 }
 else if (Model.Genres.Count == 0)
 {
-    <div class="alert alert-warning">No genres found.</div>
+	<div class="alert alert-warning">No genres found.</div>
 }
 else
 {
-    <div class="row">
-        @foreach (var g in Model.Genres)
-        {
-            <div class="col-md-4">
-                <div class="card card-genre">
-                    <div class="card-body">
-                        <h5 class="card-title">@g.Name</h5>
-                        <p class="card-text text-muted">Id: @g.Id</p>
-                    </div>
-                </div>
-            </div>
-        }
-    </div>
+	<div class="row">
+		@foreach (var g in Model.Genres)
+		{
+			<div class="col-md-4">
+				<div class="card card-genre">
+					<div class="card-body">
+						<h5 class="card-title">@g.Name</h5>
+						<p class="card-text text-muted">Id: @g.Id</p>
+					</div>
+				</div>
+			</div>
+		}
+	</div>
 }

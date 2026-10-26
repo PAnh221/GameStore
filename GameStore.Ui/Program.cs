@@ -11,15 +11,15 @@ builder.Services.AddRazorPages().AddRazorRuntimeCompilation();
 // Configure HttpClient for API calls
 builder.Services.AddHttpClient("GameApi", client =>
 {
-    client.BaseAddress = new Uri(builder.Configuration["ApiBaseUrl"] ?? "http://localhost:5197/");
+	client.BaseAddress = new Uri(builder.Configuration["ApiBaseUrl"] ?? "http://localhost:5197/");
 });
 
 var app = builder.Build();
 
 if (!app.Environment.IsDevelopment())
 {
-    app.UseExceptionHandler("/Error");
-    app.UseHsts();
+	app.UseExceptionHandler("/Error");
+	app.UseHsts();
 }
 
 app.UseStaticFiles();
