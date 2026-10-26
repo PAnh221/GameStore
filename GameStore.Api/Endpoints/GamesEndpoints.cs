@@ -13,6 +13,10 @@ public static class GamesEndpoints
 
 	public static RouteGroupBuilder MapGamesEndpoints(this WebApplication app)
 	{
+		var logger = app.Services
+			.GetRequiredService<ILoggerFactory>()
+			.CreateLogger("GamesEndpoints");
+
 		var group = app.MapGroup("games")
 						.WithParameterValidation();
 
@@ -69,6 +73,7 @@ public static class GamesEndpoints
 
 			if (!genreExists)
 			{
+				logger.LogWarning("Create game rejected: genre {GenreId} does not exist", newGame.GenreId);
 				return TypedResults.Problem(detail: "Invalid genre ID.", statusCode: StatusCodes.Status400BadRequest);
 			}
 
@@ -76,6 +81,8 @@ public static class GamesEndpoints
 
 			dbContext.Games.Add(game);
 			await dbContext.SaveChangesAsync();
+
+			logger.LogInformation("Created game {GameId} '{GameName}'", game.Id, game.Name);
 
 			return TypedResults.CreatedAtRoute(
 				game.ToGameDetailsDto(),
@@ -97,6 +104,7 @@ public static class GamesEndpoints
 
 			if (!genreExists)
 			{
+				logger.LogWarning("Update game {GameId} rejected: genre {GenreId} does not exist", id, updatedGame.GenreId);
 				return TypedResults.Problem(detail: "Invalid genre ID.", statusCode: StatusCodes.Status400BadRequest);
 			}
 
@@ -105,6 +113,8 @@ public static class GamesEndpoints
 				.SetValues(updatedGame.ToEntity(id));
 
 			await dbContext.SaveChangesAsync();
+
+			logger.LogInformation("Updated game {GameId}", id);
 
 			return TypedResults.NoContent();
 		});
@@ -120,6 +130,8 @@ public static class GamesEndpoints
 			{
 				return TypedResults.NotFound();
 			}
+
+			logger.LogInformation("Deleted game {GameId}", id);
 
 			return TypedResults.NoContent();
 		});

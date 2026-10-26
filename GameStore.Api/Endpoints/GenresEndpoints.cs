@@ -13,6 +13,10 @@ public static class GenresEndpoints
 
 	public static RouteGroupBuilder MapGenresEndpoints(this WebApplication app)
 	{
+		var logger = app.Services
+			.GetRequiredService<ILoggerFactory>()
+			.CreateLogger("GenresEndpoints");
+
 		var group = app.MapGroup("genres").WithParameterValidation();
 
 		group.MapGet("/", async Task<Ok<List<GenreDto>>> (GameStoreContext dbContext) =>
@@ -42,6 +46,7 @@ public static class GenresEndpoints
 
 			if (genreExists)
 			{
+				logger.LogWarning("Create genre rejected: name '{GenreName}' already exists", newGenre.Name);
 				return TypedResults.Problem(detail: "Genre already exists.", statusCode: StatusCodes.Status400BadRequest);
 			}
 
@@ -49,6 +54,8 @@ public static class GenresEndpoints
 
 			dbContext.Genres.Add(genre);
 			await dbContext.SaveChangesAsync();
+
+			logger.LogInformation("Created genre {GenreId} '{GenreName}'", genre.Id, genre.Name);
 
 			return TypedResults.CreatedAtRoute(
 				genre.ToDto(),
@@ -70,6 +77,7 @@ public static class GenresEndpoints
 
 			if (genreExists)
 			{
+				logger.LogWarning("Update genre {GenreId} rejected: name '{GenreName}' already exists", id, updatedGenre.Name);
 				return TypedResults.Problem(detail: "Genre name already exists.", statusCode: StatusCodes.Status400BadRequest);
 			}
 
@@ -79,6 +87,8 @@ public static class GenresEndpoints
 
 			await dbContext.SaveChangesAsync();
 
+			logger.LogInformation("Updated genre {GenreId}", id);
+
 			return TypedResults.NoContent();
 		});
 
@@ -87,6 +97,7 @@ public static class GenresEndpoints
 			var hasGames = await dbContext.Games.AnyAsync(game => game.GenreId == id);
 			if (hasGames)
 			{
+				logger.LogWarning("Delete genre {GenreId} rejected: it has associated games", id);
 				return TypedResults.Problem(detail: "Cannot delete genre because it has associated games.", statusCode: StatusCodes.Status409Conflict);
 			}
 
@@ -98,6 +109,8 @@ public static class GenresEndpoints
 			{
 				return TypedResults.NotFound();
 			}
+
+			logger.LogInformation("Deleted genre {GenreId}", id);
 
 			return TypedResults.NoContent();
 		}).ProducesProblem(StatusCodes.Status409Conflict);

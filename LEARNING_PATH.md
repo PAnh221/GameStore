@@ -54,7 +54,7 @@ Started: 2026-10-19
 - [x] **3.4 TypedResults**
   - **Done when:** endpoints return `TypedResults.*` with `Results<...>` return types.
 
-- [ ] **3.5 Logging**
+- [x] **3.5 Logging**
   - **Done when:** create, update and delete actions log through `ILogger`.
 
 ## Stage 4: Data modelling
@@ -138,3 +138,4 @@ Add a line whenever you finish something or get stuck.
 | 2026-10-23 | 3.2 | Done. `GET /games` takes `genreId`, `search`, `page` and `pageSize` and returns a `PagedResult` with `totalCount` and `totalPages`. Out-of-range `page`/`pageSize` are clamped (pageSize 1–100). Sorted by Id before Skip/Take. UI updated to read `.Items` (it only shows page 1). Paging/filter requests added to `game.http`, and 7 sample games added. Tested. Note: search is case-sensitive in SQLite. |
 | 2026-10-23 | 3.3 | Done. `AddProblemDetails`, `UseExceptionHandler` and `UseStatusCodePages` added. Tested with a temporary `/boom` route (now removed): in both Development and Production an unhandled exception returns a 500 `application/problem+json` without the exception details, and is still logged on the server. Empty 404s also come back as ProblemDetails. The games invalid-genre errors now use `Results.Problem(..., statusCode: 400)`. Gotcha: without `statusCode`, `Results.Problem` defaults to 500. Genre endpoint errors are still plain strings. |
 | 2026-10-26 | 3.4 | Done (commit 5ffdb19). All 10 endpoints return `TypedResults.*` with `Results<...>` return types (plain `Ok<T>` for the list endpoints). Genre errors converted to ProblemDetails, including the 409 on delete, so every error now uses one format. Tested: status codes unchanged. Swagger lists every response code per endpoint. Gotcha: `ProblemHttpResult` doesn't tell Swagger its status, so the 409 needed `.ProducesProblem(409)`. Also switched the solution to tab indentation (commit 9c5d6b6). |
+| 2026-10-26 | 3.5 | Done. Claude implemented it. Each endpoints file creates one named logger at startup (`CreateLogger("GamesEndpoints")` / `"GenresEndpoints"`), shared by its handlers; a static class can't be used for `ILogger<T>`. Successful create, update and delete log at Information; rejections (bad genre, duplicate name, genre with games) at Warning. Message templates, not `$"..."`. 404s and reads aren't logged. Tested: 11 requests gave 11 correct log lines. Loggers are singletons, so they're safe to capture; DbContext is scoped, so it stays a handler parameter. **Stage 3 complete.** |
