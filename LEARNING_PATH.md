@@ -59,7 +59,7 @@ Started: 2026-10-19
 
 ## Stage 4: Data modelling
 
-- [ ] **4.1 Entity configuration classes**
+- [x] **4.1 Entity configuration classes**
   - Add `IEntityTypeConfiguration<Game>` and `IEntityTypeConfiguration<Genre>`.
   - Set price precision and a max length for `Name`.
   - **Done when:** a `Data/Configurations/` folder exists and a migration was added for the changes.
@@ -139,3 +139,4 @@ Add a line whenever you finish something or get stuck.
 | 2026-10-23 | 3.3 | Done. `AddProblemDetails`, `UseExceptionHandler` and `UseStatusCodePages` added. Tested with a temporary `/boom` route (now removed): in both Development and Production an unhandled exception returns a 500 `application/problem+json` without the exception details, and is still logged on the server. Empty 404s also come back as ProblemDetails. The games invalid-genre errors now use `Results.Problem(..., statusCode: 400)`. Gotcha: without `statusCode`, `Results.Problem` defaults to 500. Genre endpoint errors are still plain strings. |
 | 2026-10-26 | 3.4 | Done (commit 5ffdb19). All 10 endpoints return `TypedResults.*` with `Results<...>` return types (plain `Ok<T>` for the list endpoints). Genre errors converted to ProblemDetails, including the 409 on delete, so every error now uses one format. Tested: status codes unchanged. Swagger lists every response code per endpoint. Gotcha: `ProblemHttpResult` doesn't tell Swagger its status, so the 409 needed `.ProducesProblem(409)`. Also switched the solution to tab indentation (commit 9c5d6b6). |
 | 2026-10-26 | 3.5 | Done. Claude implemented it. Each endpoints file creates one named logger at startup (`CreateLogger("GamesEndpoints")` / `"GenresEndpoints"`), shared by its handlers; a static class can't be used for `ILogger<T>`. Successful create, update and delete log at Information; rejections (bad genre, duplicate name, genre with games) at Warning. Message templates, not `$"..."`. 404s and reads aren't logged. Tested: 11 requests gave 11 correct log lines. Loggers are singletons, so they're safe to capture; DbContext is scoped, so it stays a handler parameter. **Stage 3 complete.** |
+| 2026-10-28 | 4.1 | Done. `GameConfiguration` and `GenreConfiguration` in `Data/Configurations/`: `Name` max length 50 on both, `Price` precision (5, 2). Genre seed data moved into `GenreConfiguration`; `OnModelCreating` now just calls `ApplyConfigurationsFromAssembly`. Installed `dotnet-ef` 8 (wasn't on this machine). `ConfigureEntities` migration is empty because SQLite has no column lengths or decimal precision; the rules are recorded in the model snapshot and will apply on SQL Server or MySQL (8.1). Tested on a copy of the DB: migration applied, data intact. |

@@ -28,9 +28,11 @@ namespace GameStore.Api.Data.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
+                        .HasMaxLength(50)
                         .HasColumnType("TEXT");
 
                     b.Property<decimal>("Price")
+                        .HasPrecision(5, 2)
                         .HasColumnType("TEXT");
 
                     b.Property<DateOnly>("ReleaseDate")
@@ -51,6 +53,7 @@ namespace GameStore.Api.Data.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
+                        .HasMaxLength(50)
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
