@@ -17,6 +17,21 @@ namespace GameStore.Api.Data.Migrations
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.2");
 
+            modelBuilder.Entity("GamePlatform", b =>
+                {
+                    b.Property<int>("GamesId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("PlatformsId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("GamesId", "PlatformsId");
+
+                    b.HasIndex("PlatformsId");
+
+                    b.ToTable("GamePlatform");
+                });
+
             modelBuilder.Entity("GameStore.Api.Entities.Game", b =>
                 {
                     b.Property<int>("Id")
@@ -86,6 +101,64 @@ namespace GameStore.Api.Data.Migrations
                             Id = 5,
                             Name = "Kids and Family"
                         });
+                });
+
+            modelBuilder.Entity("GameStore.Api.Entities.Platform", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Platforms");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Name = "PC"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "PlayStation 5"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Name = "Xbox Series X|S"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Name = "Nintendo Switch"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Name = "Mobile"
+                        });
+                });
+
+            modelBuilder.Entity("GamePlatform", b =>
+                {
+                    b.HasOne("GameStore.Api.Entities.Game", null)
+                        .WithMany()
+                        .HasForeignKey("GamesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("GameStore.Api.Entities.Platform", null)
+                        .WithMany()
+                        .HasForeignKey("PlatformsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("GameStore.Api.Entities.Game", b =>

@@ -10,6 +10,8 @@ public class GameStoreContext(DbContextOptions<GameStoreContext> options)
 
 	public DbSet<Genre> Genres => Set<Genre>();
 
+	public DbSet<Platform> Platforms => Set<Platform>();
+
 	protected override void OnModelCreating(ModelBuilder modelBuilder)
 	{
 		modelBuilder.ApplyConfigurationsFromAssembly(typeof(GameStoreContext).Assembly);
