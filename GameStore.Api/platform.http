@@ -1,0 +1,45 @@
+GET http://localhost:5197/platforms
+
+###
+GET http://localhost:5197/platforms/1
+
+###
+# Not found
+GET http://localhost:5197/platforms/999
+
+###
+POST http://localhost:5197/platforms
+Content-Type: application/json
+
+{
+  "name": "Steam Deck"
+}
+
+###
+# Duplicate name: 400
+POST http://localhost:5197/platforms
+Content-Type: application/json
+
+{
+  "name": "PC"
+}
+
+###
+PUT http://localhost:5197/platforms/6
+Content-Type: application/json
+
+{
+  "name": "Steam Deck OLED"
+}
+
+###
+# Name taken by another platform: 400
+PUT http://localhost:5197/platforms/6
+Content-Type: application/json
+
+{
+  "name": "PC"
+}
+
+###
+DELETE http://localhost:5197/platforms/6
