@@ -30,6 +30,7 @@ Content-Type: application/json
 {
     "name": "PA2",
     "genreId": 4,
+    "platformIds": [1, 2],
     "price": 19.99,
     "releaseDate": "2011-11-18"
 }   
@@ -41,6 +42,7 @@ Content-Type: application/json
 {
     "name": "Bad Genre Game",
     "genreId": 999,
+    "platformIds": [1],
     "price": 19.99,
     "releaseDate": "2020-01-01"
 }
@@ -52,6 +54,7 @@ Content-Type: application/json
 {
     "name": "new The Legend of Zelda: Breath of the Wild",
     "genreId": "1",
+    "platformIds": [3],
     "price": 9.99,
     "releaseDate": "2017-03-03"
 }
@@ -63,9 +66,52 @@ Content-Type: application/json
 {
     "name": "bad genre game",
     "genreId": "999",
+    "platformIds": [1],
     "price": 9.99,
     "releaseDate": "2017-03-03"
 }
 
 ###
 DELETE http://localhost:5197/games/14
+
+###
+# Unknown platform 999: 400
+POST http://localhost:5197/games
+Content-Type: application/json
+
+{
+    "name": "Bad platform game",
+    "genreId": 1,
+    "platformIds": [1, 999],
+    "price": 19.99,
+    "releaseDate": "2020-01-01"
+}
+
+###
+# Unknown platform 999: 400
+PUT http://localhost:5197/games/1
+Content-Type: application/json
+
+{
+    "name": "PA2",
+    "genreId": 4,
+    "platformIds": [1, 999],
+    "price": 19.99,
+    "releaseDate": "2011-11-18"
+}
+
+###
+# No platformIds: treated as an empty list
+POST http://localhost:5197/games
+Content-Type: application/json
+
+{
+    "name": "No platform game",
+    "genreId": 1,
+    "price": 19.99,
+    "releaseDate": "2020-01-01"
+}
+
+###
+# Platform 1 is used by games: 409
+DELETE http://localhost:5197/platforms/1

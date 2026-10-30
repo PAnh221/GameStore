@@ -34,6 +34,7 @@ public static class GameMapping
 				game.Id,
 				game.Name,
 				game.Genre!.Name,
+				game.Platforms.Select(platform => platform.Name).ToList(),
 				game.Price,
 				game.ReleaseDate
 			);
@@ -45,6 +46,7 @@ public static class GameMapping
 				game.Id,
 				game.Name,
 				game.GenreId,
+				game.Platforms.Select(platform => platform.Id).ToList(),
 				game.Price,
 				game.ReleaseDate
 			);

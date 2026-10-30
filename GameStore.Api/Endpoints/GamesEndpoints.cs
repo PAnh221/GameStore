@@ -31,7 +31,9 @@ public static class GamesEndpoints
 			page = Math.Max(page, 1);
 			pageSize = Math.Clamp(pageSize, 1, 100);
 
-			var query = dbContext.Games.Include(game => game.Genre).AsNoTracking().AsQueryable();
+			var query = dbContext.Games
+				.Include(game => game.Genre)
+				.Include(game => game.Platforms).AsNoTracking();
 
 			if (genreId.HasValue)
 			{
@@ -59,7 +61,10 @@ public static class GamesEndpoints
 		// GET /games/1
 		group.MapGet("/{id}", async Task<Results<Ok<GameDetailsDto>, NotFound>> (int id, GameStoreContext dbContext) =>
 		{
-			Game? game = await dbContext.Games.FindAsync(id);
+			Game? game = await dbContext.Games
+				.Include(game => game.Platforms)
+				.AsNoTracking()
+				.FirstOrDefaultAsync(game => game.Id == id);
 
 			return game is null ?
 				TypedResults.NotFound() : TypedResults.Ok(game.ToGameDetailsDto());
@@ -77,7 +82,20 @@ public static class GamesEndpoints
 				return TypedResults.Problem(detail: "Invalid genre ID.", statusCode: StatusCodes.Status400BadRequest);
 			}
 
+			var platformIds = newGame.PlatformIds ?? [];
+			var platforms = await dbContext
+				.Platforms
+				.Where(platform => platformIds.Contains(platform.Id))
+				.ToListAsync();
+
+			if (platforms.Count != platformIds.Distinct().Count())
+			{
+				logger.LogWarning("Create game rejected: one or more platforms in {PlatformIds} do not exist", platformIds);
+				return TypedResults.Problem(detail: "Invalid platform IDs.", statusCode: StatusCodes.Status400BadRequest);
+			}
+
 			Game game = newGame.ToEntity();
+			game.Platforms = platforms;
 
 			dbContext.Games.Add(game);
 			await dbContext.SaveChangesAsync();
@@ -93,7 +111,9 @@ public static class GamesEndpoints
 		// PUT /games/1
 		group.MapPut("/{id}", async Task<Results<NoContent, ProblemHttpResult, NotFound>> (int id, UpdateGameDto updatedGame, GameStoreContext dbContext) =>
 		{
-			var existingGame = await dbContext.Games.FindAsync(id);
+			var existingGame = await dbContext.Games
+				.Include(g => g.Platforms)
+				.FirstOrDefaultAsync(g => g.Id == id);
 
 			if (existingGame is null)
 			{
@@ -108,9 +128,23 @@ public static class GamesEndpoints
 				return TypedResults.Problem(detail: "Invalid genre ID.", statusCode: StatusCodes.Status400BadRequest);
 			}
 
+			var platformIds = updatedGame.PlatformIds ?? [];
+			var platforms = await dbContext
+				.Platforms
+				.Where(platform => platformIds.Contains(platform.Id))
+				.ToListAsync();
+
+			if (platforms.Count != platformIds.Distinct().Count())
+			{
+				logger.LogWarning("Update game {GameId} rejected: one or more platforms in {PlatformIds} do not exist", id, platformIds);
+				return TypedResults.Problem(detail: "Invalid platform IDs.", statusCode: StatusCodes.Status400BadRequest);
+			}
+
 			dbContext.Entry(existingGame)
 				.CurrentValues
 				.SetValues(updatedGame.ToEntity(id));
+
+			existingGame.Platforms = platforms;
 
 			await dbContext.SaveChangesAsync();
 
