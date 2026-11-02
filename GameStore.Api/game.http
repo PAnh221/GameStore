@@ -48,7 +48,7 @@ Content-Type: application/json
 }
 
 ###
-PUT http://localhost:5197/games/14
+PUT http://localhost:5197/games/1
 Content-Type: application/json
 
 {

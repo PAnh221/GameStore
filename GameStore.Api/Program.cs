@@ -1,5 +1,6 @@
 using GameStore.Api.Data;
 using GameStore.Api.Endpoints;
+using GameStore.Api.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -7,6 +8,7 @@ var connString = builder.Configuration.GetConnectionString("GameStore");
 builder.Services.AddSqlite<GameStoreContext>(connString);
 builder.Services.AddEndpointsApiExplorer().AddSwaggerGen();
 builder.Services.AddProblemDetails();
+builder.Services.AddScoped<IGameService, GameService>();
 
 var app = builder.Build();
 app.UseExceptionHandler();
