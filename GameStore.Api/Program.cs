@@ -9,6 +9,8 @@ builder.Services.AddSqlite<GameStoreContext>(connString);
 builder.Services.AddEndpointsApiExplorer().AddSwaggerGen();
 builder.Services.AddProblemDetails();
 builder.Services.AddScoped<IGameService, GameService>();
+builder.Services.AddScoped<IGenreService, GenreService>();
+builder.Services.AddScoped<IPlatformService, PlatformService>();
 
 var app = builder.Build();
 app.UseExceptionHandler();
