@@ -4,10 +4,10 @@ namespace GameStore.Api.Services;
 
 public enum GameError
 {
-    None,
-    NotFound,
-    InvalidGenre,
-    InvalidPlatforms
+	None,
+	NotFound,
+	InvalidGenre,
+	InvalidPlatforms
 }
 
 public record GameResult(GameDetailsDto? Game, GameError Error);
