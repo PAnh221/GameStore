@@ -16,7 +16,7 @@ public class GamesEndpointsTests(GameStoreWebApplicationFactory factory)
 {
 	private const int UnknownId = 999999;
 
-	private readonly HttpClient client = factory.CreateClient();
+	private readonly HttpClient client = factory.CreateAuthenticatedClient();
 
 	private static CreateGameDto NewGame(string name = "Hades", int genreId = 2, List<int>? platformIds = null) =>
 		new(name, genreId, platformIds ?? [1, 2], 24.99m, new DateOnly(2020, 9, 17));

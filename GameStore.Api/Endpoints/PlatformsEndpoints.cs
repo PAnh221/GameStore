@@ -39,7 +39,7 @@ public static class PlatformsEndpoints
 				PlatformError.DuplicateName => TypedResults.Problem(detail: "Platform already exists.", statusCode: StatusCodes.Status400BadRequest),
 				_ => TypedResults.CreatedAtRoute(result.Platform!, GetPlatformEndpointName, new { id = result.Platform!.Id })
 			};
-		});
+		}).RequireAuthorization();
 
 		// PUT /platforms/1
 		group.MapPut("/{id}", async Task<Results<NoContent, ProblemHttpResult, NotFound>> (int id, UpdatePlatformDto updatedPlatform, IPlatformService platformService) =>
@@ -52,7 +52,7 @@ public static class PlatformsEndpoints
 				PlatformError.DuplicateName => TypedResults.Problem(detail: "Platform name already exists.", statusCode: StatusCodes.Status400BadRequest),
 				_ => TypedResults.NoContent()
 			};
-		});
+		}).RequireAuthorization();
 
 		// DELETE /platforms/1
 		group.MapDelete("/{id}", async Task<Results<NoContent, ProblemHttpResult, NotFound>> (int id, IPlatformService platformService) =>
@@ -65,7 +65,7 @@ public static class PlatformsEndpoints
 				PlatformError.NotFound => TypedResults.NotFound(),
 				_ => TypedResults.NoContent()
 			};
-		}).ProducesProblem(StatusCodes.Status409Conflict);
+		}).ProducesProblem(StatusCodes.Status409Conflict).RequireAuthorization();
 
 		return group;
 	}

@@ -45,7 +45,7 @@ public static class GamesEndpoints
 				GameError.InvalidPlatforms => TypedResults.Problem(detail: "Invalid platform IDs.", statusCode: StatusCodes.Status400BadRequest),
 				_ => TypedResults.CreatedAtRoute(result.Game!, GetGameEndpointName, new { id = result.Game!.Id })
 			};
-		});
+		}).RequireAuthorization();
 
 		// PUT /games/1
 		group.MapPut("/{id}", async Task<Results<NoContent, ProblemHttpResult, NotFound>> (int id, UpdateGameDto updatedGame, IGameService gameService) =>
@@ -59,7 +59,7 @@ public static class GamesEndpoints
 				GameError.NotFound => TypedResults.NotFound(),
 				_ => TypedResults.NoContent(),
 			};
-		});
+		}).RequireAuthorization();
 
 		// DELETE /games/1
 		group.MapDelete("/{id}", async Task<Results<NoContent, NotFound>> (int id, IGameService gameService) =>
@@ -67,7 +67,7 @@ public static class GamesEndpoints
 			var isDeleted = await gameService.DeleteGameAsync(id);
 
 			return isDeleted ? TypedResults.NoContent() : TypedResults.NotFound();
-		});
+		}).RequireAuthorization();
 
 		return group;
 	}

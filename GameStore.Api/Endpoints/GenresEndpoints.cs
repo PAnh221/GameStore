@@ -34,7 +34,7 @@ public static class GenresEndpoints
 				GenreError.DuplicateName => TypedResults.Problem(detail: "Genre already exists.", statusCode: StatusCodes.Status400BadRequest),
 				_ => TypedResults.CreatedAtRoute(result.Genre!, GetGenreEndpointName, new { id = result.Genre!.Id })
 			};
-		});
+		}).RequireAuthorization();
 
 		group.MapPut("/{id}", async Task<Results<NoContent, ProblemHttpResult, NotFound>> (int id, UpdateGenreDto updatedGenre, IGenreService genreService) =>
 		{
@@ -46,7 +46,7 @@ public static class GenresEndpoints
 				GenreError.DuplicateName => TypedResults.Problem(detail: "Genre name already exists.", statusCode: StatusCodes.Status400BadRequest),
 				_ => TypedResults.NoContent()
 			};
-		});
+		}).RequireAuthorization();
 
 		group.MapDelete("/{id}", async Task<Results<NoContent, ProblemHttpResult, NotFound>> (int id, IGenreService genreService) =>
 		{
@@ -58,7 +58,7 @@ public static class GenresEndpoints
 				GenreError.NotFound => TypedResults.NotFound(),
 				_ => TypedResults.NoContent()
 			};
-		}).ProducesProblem(StatusCodes.Status409Conflict);
+		}).ProducesProblem(StatusCodes.Status409Conflict).RequireAuthorization();
 
 		return group;
 	}

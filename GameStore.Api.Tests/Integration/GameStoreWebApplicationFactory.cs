@@ -1,5 +1,7 @@
+using System.Net.Http.Headers;
 using Microsoft.AspNetCore.Mvc.Testing;
 using GameStore.Api.Data;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Data.Sqlite;
@@ -21,7 +23,18 @@ public class GameStoreWebApplicationFactory : WebApplicationFactory<Program>
 		{
 			services.RemoveAll<DbContextOptions<GameStoreContext>>();
 			services.AddDbContext<GameStoreContext>(options => options.UseSqlite(connection));
+
+			services.AddAuthentication(TestAuthHandler.SchemeName)
+				.AddScheme<AuthenticationSchemeOptions, TestAuthHandler>(TestAuthHandler.SchemeName, null);
 		});
+	}
+
+	public HttpClient CreateAuthenticatedClient()
+	{
+		var client = CreateClient();
+		client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(TestAuthHandler.SchemeName);
+
+		return client;
 	}
 
 	protected override void Dispose(bool disposing)

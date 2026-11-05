@@ -1,3 +1,6 @@
+@token = {{$dotenv GAMESTORE_TOKEN}}
+
+###
 GET http://localhost:5197/platforms
 
 ###
@@ -10,6 +13,7 @@ GET http://localhost:5197/platforms/999
 ###
 POST http://localhost:5197/platforms
 Content-Type: application/json
+Authorization: Bearer {{token}}
 
 {
   "name": "Steam Deck"
@@ -19,6 +23,7 @@ Content-Type: application/json
 # Duplicate name: 400
 POST http://localhost:5197/platforms
 Content-Type: application/json
+Authorization: Bearer {{token}}
 
 {
   "name": "PC"
@@ -27,6 +32,7 @@ Content-Type: application/json
 ###
 PUT http://localhost:5197/platforms/6
 Content-Type: application/json
+Authorization: Bearer {{token}}
 
 {
   "name": "Steam Deck OLED"
@@ -36,6 +42,7 @@ Content-Type: application/json
 # Name taken by another platform: 400
 PUT http://localhost:5197/platforms/6
 Content-Type: application/json
+Authorization: Bearer {{token}}
 
 {
   "name": "PC"
@@ -43,3 +50,4 @@ Content-Type: application/json
 
 ###
 DELETE http://localhost:5197/platforms/6
+Authorization: Bearer {{token}}

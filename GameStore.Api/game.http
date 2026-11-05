@@ -1,3 +1,6 @@
+@token = {{$dotenv GAMESTORE_TOKEN}}
+
+###
 GET http://localhost:5197/games
 
 ###
@@ -26,6 +29,7 @@ GET http://localhost:5197/games/1
 ###
 POST http://localhost:5197/games
 Content-Type: application/json
+Authorization: Bearer {{token}}
 
 {
     "name": "PA2",
@@ -33,11 +37,25 @@ Content-Type: application/json
     "platformIds": [1, 2],
     "price": 19.99,
     "releaseDate": "2011-11-18"
-}   
+}
+
+###
+# No token: 401
+POST http://localhost:5197/games
+Content-Type: application/json
+
+{
+    "name": "PA2",
+    "genreId": 4,
+    "platformIds": [1, 2],
+    "price": 19.99,
+    "releaseDate": "2011-11-18"
+}
 
 ###
 POST http://localhost:5197/games
 Content-Type: application/json
+Authorization: Bearer {{token}}
 
 {
     "name": "Bad Genre Game",
@@ -50,6 +68,7 @@ Content-Type: application/json
 ###
 PUT http://localhost:5197/games/1
 Content-Type: application/json
+Authorization: Bearer {{token}}
 
 {
     "name": "new The Legend of Zelda: Breath of the Wild",
@@ -62,6 +81,7 @@ Content-Type: application/json
 ###
 PUT http://localhost:5197/games/1
 Content-Type: application/json
+Authorization: Bearer {{token}}
 
 {
     "name": "bad genre game",
@@ -73,11 +93,13 @@ Content-Type: application/json
 
 ###
 DELETE http://localhost:5197/games/14
+Authorization: Bearer {{token}}
 
 ###
 # Unknown platform 999: 400
 POST http://localhost:5197/games
 Content-Type: application/json
+Authorization: Bearer {{token}}
 
 {
     "name": "Bad platform game",
@@ -91,6 +113,7 @@ Content-Type: application/json
 # Unknown platform 999: 400
 PUT http://localhost:5197/games/1
 Content-Type: application/json
+Authorization: Bearer {{token}}
 
 {
     "name": "PA2",
@@ -104,6 +127,7 @@ Content-Type: application/json
 # No platformIds: treated as an empty list
 POST http://localhost:5197/games
 Content-Type: application/json
+Authorization: Bearer {{token}}
 
 {
     "name": "No platform game",
@@ -115,3 +139,4 @@ Content-Type: application/json
 ###
 # Platform 1 is used by games: 409
 DELETE http://localhost:5197/platforms/1
+Authorization: Bearer {{token}}
