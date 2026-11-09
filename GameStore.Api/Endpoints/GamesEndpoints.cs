@@ -67,7 +67,7 @@ public static class GamesEndpoints
 			var isDeleted = await gameService.DeleteGameAsync(id);
 
 			return isDeleted ? TypedResults.NoContent() : TypedResults.NotFound();
-		}).RequireAuthorization();
+		}).RequireAuthorization("AdminOnly");
 
 		return group;
 	}

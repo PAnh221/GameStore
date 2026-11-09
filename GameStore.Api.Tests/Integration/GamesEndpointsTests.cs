@@ -17,6 +17,7 @@ public class GamesEndpointsTests(GameStoreWebApplicationFactory factory)
 	private const int UnknownId = 999999;
 
 	private readonly HttpClient client = factory.CreateAuthenticatedClient();
+	private readonly HttpClient adminClient = factory.CreateAdminClient();
 
 	private static CreateGameDto NewGame(string name = "Hades", int genreId = 2, List<int>? platformIds = null) =>
 		new(name, genreId, platformIds ?? [1, 2], 24.99m, new DateOnly(2020, 9, 17));
@@ -202,7 +203,7 @@ public class GamesEndpointsTests(GameStoreWebApplicationFactory factory)
 	{
 		var created = await CreateGameAsync();
 
-		var deleteResponse = await client.DeleteAsync($"/games/{created.Id}");
+		var deleteResponse = await adminClient.DeleteAsync($"/games/{created.Id}");
 		var getResponse = await client.GetAsync($"/games/{created.Id}");
 
 		Assert.Equal(HttpStatusCode.NoContent, deleteResponse.StatusCode);
@@ -212,8 +213,20 @@ public class GamesEndpointsTests(GameStoreWebApplicationFactory factory)
 	[Fact]
 	public async Task DeleteGame_UnknownId_Returns404()
 	{
-		var response = await client.DeleteAsync($"/games/{UnknownId}");
+		var response = await adminClient.DeleteAsync($"/games/{UnknownId}");
 
 		Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+	}
+
+	[Fact]
+	public async Task DeleteGame_NotAdmin_Returns403AndKeepsGame()
+	{
+		var created = await CreateGameAsync();
+
+		var deleteResponse = await client.DeleteAsync($"/games/{created.Id}");
+		var getResponse = await client.GetAsync($"/games/{created.Id}");
+
+		Assert.Equal(HttpStatusCode.Forbidden, deleteResponse.StatusCode);
+		Assert.Equal(HttpStatusCode.OK, getResponse.StatusCode);
 	}
 }

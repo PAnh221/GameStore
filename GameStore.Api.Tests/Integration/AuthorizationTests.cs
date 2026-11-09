@@ -6,6 +6,8 @@ public class AuthorizationTests(GameStoreWebApplicationFactory factory)
 	: IClassFixture<GameStoreWebApplicationFactory>
 {
 	private readonly HttpClient anonymousClient = factory.CreateClient();
+	private readonly HttpClient userClient = factory.CreateAuthenticatedClient();
+	private readonly HttpClient adminClient = factory.CreateAdminClient();
 
 	[Theory]
 	[InlineData("POST", "/games")]
@@ -23,6 +25,30 @@ public class AuthorizationTests(GameStoreWebApplicationFactory factory)
 
 		Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
 		Assert.Equal("application/problem+json", response.Content.Headers.ContentType?.MediaType);
+	}
+
+	[Theory]
+	[InlineData("/games/999999")]
+	[InlineData("/genres/999999")]
+	[InlineData("/platforms/999999")]
+	public async Task Delete_UserWithoutAdminRole_Returns403(string url)
+	{
+		var response = await userClient.DeleteAsync(url);
+
+		Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
+		Assert.Equal("application/problem+json", response.Content.Headers.ContentType?.MediaType);
+	}
+
+	// 404 proves the request got past authorization to the endpoint.
+	[Theory]
+	[InlineData("/games/999999")]
+	[InlineData("/genres/999999")]
+	[InlineData("/platforms/999999")]
+	public async Task Delete_Admin_ReachesEndpoint(string url)
+	{
+		var response = await adminClient.DeleteAsync(url);
+
+		Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
 	}
 
 	[Theory]

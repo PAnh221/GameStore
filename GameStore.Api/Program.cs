@@ -12,7 +12,8 @@ builder.Services.AddScoped<IGameService, GameService>();
 builder.Services.AddScoped<IGenreService, GenreService>();
 builder.Services.AddScoped<IPlatformService, PlatformService>();
 builder.Services.AddAuthentication().AddJwtBearer();
-builder.Services.AddAuthorization();
+builder.Services.AddAuthorizationBuilder()
+	.AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"));
 
 var app = builder.Build();
 app.UseExceptionHandler();

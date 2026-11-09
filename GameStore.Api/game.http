@@ -1,4 +1,5 @@
 @token = {{$dotenv GAMESTORE_TOKEN}}
+@adminToken = {{$dotenv GAMESTORE_ADMIN_TOKEN}}
 
 ###
 GET http://localhost:5197/games
@@ -93,7 +94,7 @@ Authorization: Bearer {{token}}
 
 ###
 DELETE http://localhost:5197/games/14
-Authorization: Bearer {{token}}
+Authorization: Bearer {{adminToken}}
 
 ###
 # Unknown platform 999: 400
@@ -139,4 +140,4 @@ Authorization: Bearer {{token}}
 ###
 # Platform 1 is used by games: 409
 DELETE http://localhost:5197/platforms/1
-Authorization: Bearer {{token}}
+Authorization: Bearer {{adminToken}}

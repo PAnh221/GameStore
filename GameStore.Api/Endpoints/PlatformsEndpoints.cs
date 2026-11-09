@@ -65,7 +65,7 @@ public static class PlatformsEndpoints
 				PlatformError.NotFound => TypedResults.NotFound(),
 				_ => TypedResults.NoContent()
 			};
-		}).ProducesProblem(StatusCodes.Status409Conflict).RequireAuthorization();
+		}).ProducesProblem(StatusCodes.Status409Conflict).RequireAuthorization("AdminOnly");
 
 		return group;
 	}

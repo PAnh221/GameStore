@@ -37,6 +37,15 @@ public class GameStoreWebApplicationFactory : WebApplicationFactory<Program>
 		return client;
 	}
 
+	public HttpClient CreateAdminClient()
+	{
+		var client = CreateClient();
+		client.DefaultRequestHeaders.Authorization =
+			new AuthenticationHeaderValue(TestAuthHandler.SchemeName, TestAuthHandler.AdminParameter);
+
+		return client;
+	}
+
 	protected override void Dispose(bool disposing)
 	{
 		base.Dispose(disposing);

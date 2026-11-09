@@ -1,4 +1,5 @@
 @token = {{$dotenv GAMESTORE_TOKEN}}
+@adminToken = {{$dotenv GAMESTORE_ADMIN_TOKEN}}
 
 ###
 GET http://localhost:5197/genres
@@ -26,4 +27,4 @@ Authorization: Bearer {{token}}
 
 ###
 DELETE http://localhost:5197/genres/4
-Authorization: Bearer {{token}}
+Authorization: Bearer {{adminToken}}
