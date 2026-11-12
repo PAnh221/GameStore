@@ -74,7 +74,7 @@ public class GameMappingTests
 	{
 		var dto = CreateGame().ToGameDetailsDto();
 
-		Assert.Equal(7, dto.Id);
+		Assert.Equal(8, dto.Id);
 		Assert.Equal("Hades", dto.Name);
 		Assert.Equal(2, dto.GenreId);
 		Assert.Equal([1, 4], dto.PlatformIds);
